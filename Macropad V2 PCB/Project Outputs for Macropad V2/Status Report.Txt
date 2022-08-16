@@ -1,0 +1,14 @@
+Output: NC Drill Files
+Type  : NC Drill
+From  : Project [Macropad V2.PrjPcb]
+   Generated File[Macropad V2-RoundHoles.TXT]
+   Generated File[Macropad V2-SlotHoles.TXT]
+   Generated File[Macropad V2-RectHoles.TXT]
+   Generated File[Macropad V2.LDP]
+   Generated File[Macropad V2.DRR]
+
+
+Files Generated   : 5
+Documents Printed : 0
+
+Finished Output Generation At 7:49:46 AM On 8/14/2022
