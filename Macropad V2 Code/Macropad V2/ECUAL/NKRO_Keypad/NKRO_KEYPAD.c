@@ -5,8 +5,8 @@
  *      Author: Ben Veghte
  */
 
-#include <NKRO_KEYPAD.h>
-#include <NKRO_KEYPAD_CFG.h>
+#include "NKRO_KEYPAD.h"
+#include "NKRO_KEYPAD_CFG.h"
 
 #define DEBOUNCE_MASK 4294967295 //Max value stored in uint32_t, max debounce length, if more debouncing is required,
 //if a longer debounce time is required, it will be necessary to change the datatype of key_history to uint64

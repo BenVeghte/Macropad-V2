@@ -4,8 +4,8 @@
  *  Created on: 8/17/2022
  *      Author: Ben Veghte
 */
-#include <NKRO_KEYPAD_CFG.h>
-#include <NKRO_KEYPAD.h>
+#include "NKRO_KEYPAD_CFG.h"
+#include "NKRO_KEYPAD.h"
 
 const struct NKROKeypadCFG KeypadCfgParams =
     {
