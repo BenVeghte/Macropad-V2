@@ -142,7 +142,6 @@ void NKROKeypadPressReleaseCheck() {
         // this will allow for a single comparison to be made to check if the value is one that has recently changed
         KeypadInfo.key_updates[i].row = KEYPAD_ROWS;
     }
-    KeypadInfo.key_updates = {0}; // this probably won't work
 
 
 
