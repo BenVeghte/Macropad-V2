@@ -11,12 +11,12 @@
 #define DEBOUNCE_MASK 4294967295 //Max value stored in uint32_t, max debounce length, if more debouncing is required,
 //if a longer debounce time is required, it will be necessary to change the datatype of key_history to uint64
 
-static KeypadInfoTypeDef KeypadInfo;
+static KeypadHistoryTypeDef KeypadInfo;
 
 /*Function for the initialization of the keypad pins*/
 //This function needs to get called after the rest of the pin initialization is called to prevent
 // the settings being overridden
-void NKROKeypadInit(uint8_t *b_key_states, uint32_t *u32_key_history) {
+void NKROKeypadInit(bool *b_key_states, uint32_t *u32_key_history) {
     uint8_t i = 0;
     GPIO_InitTypeDef GPIO_InitStruct = {0};
     /*Make sure memory addresses to key_states and key_history are properly supplied*/
@@ -36,7 +36,6 @@ void NKROKeypadInit(uint8_t *b_key_states, uint32_t *u32_key_history) {
     }
 
     /*Defining pin modes*/
-    #ifdef COL_SCAN
     for(i=0; i<KEYPAD_ROWS; i++) {
         GPIO_InitStruct.Pin = KeypadCfgParams.row_pin[i];
         GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
@@ -49,21 +48,6 @@ void NKROKeypadInit(uint8_t *b_key_states, uint32_t *u32_key_history) {
         GPIO_InitStruct.Pull = GPIO_PULLDOWN;
         HAL_GPIO_Init(KeypadCfgParams.col_pin[i], &GPIO_InitStruct);
     }
-    #elifdef ROW_SCAN
-    for(i=0; i<KEYPAD_COLS; i++) {
-        GPIO_InitStruct.Pin = KeypadCfgParams.col_pin[i];
-        GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-        GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_MEDIUM;
-        HAL_GPIO_Init(KeypadCfgParams.col_pin[i], &GPIO_InitStruct);
-    }
-    for(i=0; i<KEYPAD_ROWS; i++) {
-        GPIO_InitStruct.Pin = KeypadCfgParams.row_pin[i];
-        GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-        GPIO_InitStruct.Pull = GPIO_PULLDOWN;
-        HAL_GPIO_Init(KeypadCfgParams.row_pin[i], &GPIO_InitStruct);
-    }
-    #endif
-
 }
 
 /*Function to scan the keypad for actively pressed keys*/
@@ -74,61 +58,59 @@ void NKROKeypadScan() {
     uint8_t key_Pressed;
 
     /*Check to see if any key is pressed to save calculations*/
-#ifdef COL_SCAN
+    uint8_t cols_pressed;
+    bool scan_needed = false;
     for(i=0;i<KEYPAD_ROWS; i++) {
         HAL_GPIO_WritePin(KeypadCfgParams.row_gpio_family[i], KeypadCfgParams.row_pin[i], 1);
     }
-    for(i=0;i<KEYPAD_COLS;i++) {
-        states = HAL_GPIO_ReadPin(KeypadCfgParams.col_gpio_family[i], KeypadCfgParams.col_pin[i]);
+    for(i=KEYPAD_COLS-1;i>=0;i--) {
+        cols_pressed << 1;
+        if (HAL_GPIO_ReadPin(KeypadCfgParams.col_gpio_family[i], KeypadCfgParams.col_pin[i]) == 1) {
+           scan_needed = true;
+           break;
+        }
     }
+    // Lower row pins back down
     for(i=0;i<KEYPAD_ROWS; i++) {
         HAL_GPIO_WritePin(KeypadCfgParams.row_gpio_family[i], KeypadCfgParams.row_pin[i], 0);
     }
-#elifdef ROW_SCAN
-    for(i=0;i<KEYPAD_COLS; i++) {
-        HAL_GPIO_WritePin(KeypadCfgParams.col_gpio_family[i], KeypadCfgParams.col_pin[i], 1);
-    }
-    for(i=0;i<KEYPAD_ROWS;i++) {
-        key_pressed = keypressed + HAL_GPIO_ReadPin(KeypadCfgParams.row_gpio_family[i], KeypadCfgParams.row_pin[i]);
-    }
-    for(i=0;i<KEYPAD_COLS; i++) {
-        HAL_GPIO_WritePin(KeypadCfgParams.col_gpio_family[i], KeypadCfgParams.col_pin[i], 0);
+
+
+    /*Check to see if any key has non-zero history*/
+    if(scan_needed == false){
+        for(i=0;i<KEYPAD_ROWS;i++){
+            for(j=0;j<KEYPAD_COLS;j++){
+                if(key_history[i][j] != 0){
+                    scan_needed = true;
+                    break;
+                }
+            }
+            if(scan_needed == true){
+                break
+            }
+        }
     }
 
-#endif
+
     /*If any key is pressed*/
-    if(key_pressed>=1) {
-        #ifdef COL_SCAN
+    if(scan_needed == true) {
         for(i=0;i<KEYPAD_ROWS; i++) {
+            //Write Current Row Pin High
             HAL_GPIO_WritePin(KeypadCfgParams.row_gpio_family[i], KeypadCfgParams.row_pin[i], 1);
 
             for(j=0;j<KEYPAD_COLS;j++) {
                 KeypadInfo.key_history[i][j] = KeypadInfo.key_history[i][j] << 1;
-
+                
+                //If pin is high
                 if (HAL_GPIO_ReadPin(KeypadCfgParams.col_gpio_family[j], KeypadCfgParams.col_pin[j])) {
                     KeypadInfo.key_history[i][j]++;
                 }
-                // NEED Someway to track button press, and whether the button was just pressed or released, long press info necessary
-
             }
+
+            //Return current row back to low
             HAL_GPIO_WritePin(KeypadCfgParams.row_gpio_family[i], KeypadCfgParams.row_pin[i], 0);
 
         }
-        #elifdef ROW_SCAN
-        for(j=0;j<KEYPAD_COLS; j++) {
-            HAL_GPIO_WritePin(KeypadCfgParams.col_gpio_family[j], KeypadCfgParams.col_pin[j], 1);
-            for(i=0;i<KEYPAD_ROWS;i++) {
-                KeypadInfo.key_history[i][j] = KeypadInfo.key_history[i][j] << 1;
-                if (HAL_GPIO_ReadPin(KeypadCfgParams.row_gpio_family[i], KeypadCfgParams.row_pin[i])) {
-                    KeypadInfo.key_history[i][j]++;
-                }
-                // NEED Someway to track button press, and whether the button was just pressed or released, long press info necessary
-
-            }
-            HAL_GPIO_WritePin(KeypadCfgParams.col_gpio_family[j], KeypadCfgParams.col_pin[j], 0);
-        }
-        #endif
-
     }
 }
 
