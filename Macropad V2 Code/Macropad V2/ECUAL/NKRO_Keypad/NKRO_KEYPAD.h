@@ -34,24 +34,19 @@ typedef struct NKROKeypadCFGTypeDef {
     GPIO_TypeDef * col_GPIO_family[KEYPAD_COLS]
 };
 
-typedef struct KeyStateChangeTypeDef {
-    uint8_t row;
-    uint8_t col;
-    uint8_t state;
-};
 
-typedef struct KeypadInfoTypeDef {
-    uint8_t *key_states[KEYPAD_ROWS][KEYPAD_COLS];
+typedef struct KeypadHistoryTypeDef {
+    bool *key_states[KEYPAD_ROWS*KEYPAD_COLS+1];
     uint32_t *key_history[KEYPAD_ROWS][KEYPAD_COLS];
-    KeyStateChangeTypeDef *key_updates[KEYPAD_COLS*KEYPAD_ROWS];
+    uint8_t *key_last[KEYPAD_ROWS][KEYPAD_COLS];
 };
 
 
 
 
 
-void NKROKeypadInit(unint16_t *au16_key_states);
-void NKROKeypadScan();
+void NKROKeypadInit(bool *b_key_states, uint32_t *u32_key_history, uint8_t *u8_keystate);
+bool NKROKeypadScan();
 void NKROKeypadPressReleaseCheck();
 
 #endif /*NKRO_KEYPAD_H_*/

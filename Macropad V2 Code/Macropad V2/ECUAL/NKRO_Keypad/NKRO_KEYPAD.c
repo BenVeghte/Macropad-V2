@@ -16,7 +16,7 @@ static KeypadHistoryTypeDef KeypadInfo;
 /*Function for the initialization of the keypad pins*/
 //This function needs to get called after the rest of the pin initialization is called to prevent
 // the settings being overridden
-void NKROKeypadInit(bool *b_key_states, uint32_t *u32_key_history) {
+void NKROKeypadInit(bool *b_key_states, uint32_t *u32_key_history, uint8_t *u8_keystate) {
     uint8_t i = 0;
     GPIO_InitTypeDef GPIO_InitStruct = {0};
     /*Make sure memory addresses to key_states and key_history are properly supplied*/
@@ -51,7 +51,13 @@ void NKROKeypadInit(bool *b_key_states, uint32_t *u32_key_history) {
 }
 
 /*Function to scan the keypad for actively pressed keys*/
-void NKROKeypadScan() {
+bool NKROKeypadScan() {
+
+    """
+    If scanning the keys is necessary, that means it is possible for the state to ahve changed
+    and a stateupdate check is necessary
+    """
+    
     uint8_t i = 0;
     uint8_t j = 0;
     uint8_t read_state;
@@ -92,14 +98,14 @@ void NKROKeypadScan() {
     }
 
 
-    /*If any key is pressed*/
+    /*If any key is pressed or history holds non-zero value*/
     if(scan_needed == true) {
         for(i=0;i<KEYPAD_ROWS; i++) {
             //Write Current Row Pin High
             HAL_GPIO_WritePin(KeypadCfgParams.row_gpio_family[i], KeypadCfgParams.row_pin[i], 1);
 
             for(j=0;j<KEYPAD_COLS;j++) {
-                KeypadInfo.key_history[i][j] = KeypadInfo.key_history[i][j] << 1;
+                KeypadInfo.key_history[i][j] << 1;
                 
                 //If pin is high
                 if (HAL_GPIO_ReadPin(KeypadCfgParams.col_gpio_family[j], KeypadCfgParams.col_pin[j])) {
@@ -112,42 +118,24 @@ void NKROKeypadScan() {
 
         }
     }
+    return scan_needed
 }
 
-void NKROKeypadPressReleaseCheck() {
+void NKROKeypadStateCheck() {
     uint8_t i = 0;
     uint8_t j = 0;
-    uint8_t states_changed = 0;
-
-    for(i=0;i<KEYPAD_ROWS*KEYPAD_COLS;i++) {
-        // Fill keypad key updates rows with an impossible value
-        // this will allow for a single comparison to be made to check if the value is one that has recently changed
-        KeypadInfo.key_updates[i].row = KEYPAD_ROWS;
-    }
-
-
 
     for(i=0;i<KEYPAD_ROWS;i++) {
         for(j=0;j<KEYPAD_COLS;j++) {
-            //Key passes debouncing in the high state (button pressed), and the last value in the key state is low
-            if((KeypadInfo.key_history[i][j] & DEBOUNCE_MASK) == DEBOUNCE_MASK, (~KeypadInfo.key_states[i][j] & 1)==1) {
-                KeypadInfo.key_states[i][j] = KeypadInfo.key_states[i][j] << 1;
-                KeypadInfo.key_states[i][j]++;
-
-                KeypadInfo.key_updates[states_changed].row = i;
-                KeypadInfo.key_updates[states_changed].col = j;
-                KeypadInfo.key_updates[states_changed].state = 1;
-                states_changed++;
+            //If current state exceeds or is equal to debounce mask and past value is low
+            if((KeypadInfo.key_history[i][j]&DEBOUNCE_MASK)>=DEBOUNCE_MASK, KeypadInfo.key_last[i][j] == 0){
+                KeypadInfo.key_states[(KEYPAD_COLS*(i))+j)] = true;
+                KeypadInfo.state_history[i][j] = 1;
             }
-
-            //Key passes debouncing in the low state (button released), and the last value in the key state is high
-            else if ((~KeypadInfo.key_history[i][j] & DEBOUNCE_MASK) == DEBOUNCE_MASK, (KeypadInfo.key_states[i][j] & 1)==1) {
-                KeypadInfo.key_states[i][j] = KeypadInfo.key_states[i][j] << 1;
-
-                KeypadInfo.key_updates[states_changed].row = i;
-                KeypadInfo.key_updates[states_changed].col = j;
-                KeypadInfo.key_updates[states_changed].state = 0;
-                states_changed++;
+            //Else if the opposite of the current state passes the debound mask and the previous value was high
+            else if(((~KeypadInfo.key_history[i][j])&DEBOUNCE_MASK)>=DEBOUNCE_MASK, KeypadInfo.key_last[i][j] == 1) {
+                KeypadInfo.key_states[(KEYPAD_COLS*(i))+j)] = false;
+                KeypadInfo.state_history[i][j] = 0;
             }
         }
     }
