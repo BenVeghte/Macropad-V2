@@ -9,6 +9,6 @@
 
 #include "NKRO_KEYPAD.h"
 
-extern const NKRO_KeypadCFGTypeDef KeypadCfgParams;
+extern const KeypadCFGTypeDef KeypadCfgParams;
 
 #endif /*$NKRO_KEYPAD_CFG_H_*/
