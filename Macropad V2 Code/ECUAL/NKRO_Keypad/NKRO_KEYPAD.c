@@ -48,6 +48,10 @@ void NKROKeypadInit(bool *b_key_states, uint32_t *u32_key_history, uint8_t *u8_k
         GPIO_InitStruct.Pull = GPIO_PULLDOWN;
         HAL_GPIO_Init(KeypadCfgParams.col_pin[i], &GPIO_InitStruct);
     }
+    GPIO_InitStruct.Pin = KeypadCfgParams.encoder_pin;
+    GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+    GPIO_InitStruct.Pull = GPIO_MODE_PULLUP;
+    HAL_GPIO_Init(KeypadCfgParams.encoder_pin, &GPIO_InitStruct);
 }
 
 /*Function to scan the keypad for actively pressed keys*/
@@ -60,17 +64,13 @@ bool NKROKeypadScan() {
     
     uint8_t i = 0;
     uint8_t j = 0;
-    uint8_t read_state;
-    uint8_t key_Pressed;
 
     /*Check to see if any key is pressed to save calculations*/
-    uint8_t cols_pressed;
     bool scan_needed = false;
     for(i=0;i<KEYPAD_ROWS; i++) {
         HAL_GPIO_WritePin(KeypadCfgParams.row_gpio_family[i], KeypadCfgParams.row_pin[i], 1);
     }
     for(i=KEYPAD_COLS-1;i>=0;i--) {
-        cols_pressed << 1;
         if (HAL_GPIO_ReadPin(KeypadCfgParams.col_gpio_family[i], KeypadCfgParams.col_pin[i]) == 1) {
            scan_needed = true;
            break;
@@ -81,21 +81,21 @@ bool NKROKeypadScan() {
         HAL_GPIO_WritePin(KeypadCfgParams.row_gpio_family[i], KeypadCfgParams.row_pin[i], 0);
     }
 
+    //Encoder status
+    if(HAL_GPIO_ReadPin(KeypadCfgParams.encoder_gpio_family, KeypadCfgParams.encoder_pin) == 1) {
+           scan_needed = true;
+    }
 
     /*Check to see if any key has non-zero history*/
     if(scan_needed == false){
-        for(i=0;i<KEYPAD_ROWS;i++){
-            for(j=0;j<KEYPAD_COLS;j++){
-                if(key_history[i][j] != 0){
+        for(i=0;i<KEYPAD_ROWS*KEYPAD_COLS+1;i++){
+                if(KeypadInfo.key_history[i] != 0){
                     scan_needed = true;
                     break;
                 }
             }
-            if(scan_needed == true){
-                break
-            }
-        }
     }
+
 
 
     /*If any key is pressed or history holds non-zero value*/
@@ -105,11 +105,11 @@ bool NKROKeypadScan() {
             HAL_GPIO_WritePin(KeypadCfgParams.row_gpio_family[i], KeypadCfgParams.row_pin[i], 1);
 
             for(j=0;j<KEYPAD_COLS;j++) {
-                KeypadInfo.key_history[i][j] << 1;
+                KeypadInfo.key_history[(KEYPAD_COLS*(i))+j)] << 1;
                 
                 //If pin is high
-                if (HAL_GPIO_ReadPin(KeypadCfgParams.col_gpio_family[j], KeypadCfgParams.col_pin[j])) {
-                    KeypadInfo.key_history[i][j]++;
+                if (HAL_GPIO_ReadPin(KeypadCfgParams.col_gpio_family[j], KeypadCfgParams.col_pin[j])) { // This method with only register identify individual presses and wont do anything about long vs short press
+                    KeypadInfo.key_history[(KEYPAD_COLS*(i))+j)]++;
                 }
             }
 
@@ -117,6 +117,12 @@ bool NKROKeypadScan() {
             HAL_GPIO_WritePin(KeypadCfgParams.row_gpio_family[i], KeypadCfgParams.row_pin[i], 0);
 
         }
+        
+        //Handling Encoder Presses
+        if (HAL_GPIO_ReadPin(KeypadCfgParams.encoder_gpio_family, KeypadCfgParams.encoder_pin)) { 
+            KeypadInfo.key_history[KEYPAD_ROWS*KEYPAD_COLS]++;
+        }
+
     }
     return scan_needed
 }
@@ -128,15 +134,25 @@ void NKROKeypadStateCheck() {
     for(i=0;i<KEYPAD_ROWS;i++) {
         for(j=0;j<KEYPAD_COLS;j++) {
             //If current state exceeds or is equal to debounce mask and past value is low
-            if((KeypadInfo.key_history[i][j]&DEBOUNCE_MASK)>=DEBOUNCE_MASK, KeypadInfo.key_last[i][j] == 0){
+            if((KeypadInfo.key_history[(KEYPAD_COLS*(i))+j)]&DEBOUNCE_MASK)>=DEBOUNCE_MASK, KeypadInfo.key_last[(KEYPAD_COLS*(i))+j)] == 0){
                 KeypadInfo.key_states[(KEYPAD_COLS*(i))+j)] = true;
-                KeypadInfo.state_history[i][j] = 1;
+                KeypadInfo.state_history[(KEYPAD_COLS*(i))+j)] = 1;
             }
             //Else if the opposite of the current state passes the debound mask and the previous value was high
-            else if(((~KeypadInfo.key_history[i][j])&DEBOUNCE_MASK)>=DEBOUNCE_MASK, KeypadInfo.key_last[i][j] == 1) {
+            else if(((~KeypadInfo.key_history[(KEYPAD_COLS*(i))+j)])&DEBOUNCE_MASK)>=DEBOUNCE_MASK, KeypadInfo.key_last[(KEYPAD_COLS*(i))+j)] == 1) {
                 KeypadInfo.key_states[(KEYPAD_COLS*(i))+j)] = false;
-                KeypadInfo.state_history[i][j] = 0;
+                KeypadInfo.state_history[(KEYPAD_COLS*(i))+j)] = 0;
             }
         }
     }
+    //Handle Encoder
+    if((KeypadInfo.key_history[KEYPAD_ROWS*KEYPAD_COLS]&DEBOUNCE_MASK)>=DEBOUNCE_MASK, KeypadInfo.key_last[KEYPAD_ROWS*KEYPAD_COLS] == 0){
+            KeypadInfo.key_states[KEYPAD_ROWS*KEYPAD_COLS] = true;
+            KeypadInfo.state_history[KEYPAD_ROWS*KEYPAD_COLS] = 1;
+        }
+        //Else if the opposite of the current state passes the debound mask and the previous value was high
+        else if(((~KeypadInfo.key_history[KEYPAD_ROWS*KEYPAD_COLS])&DEBOUNCE_MASK)>=DEBOUNCE_MASK, KeypadInfo.key_last[KEYPAD_ROWS*KEYPAD_COLS] == 1) {
+            KeypadInfo.key_states[KEYPAD_ROWS*KEYPAD_COLS] = false;
+            KeypadInfo.state_history[KEYPAD_ROWS*KEYPAD_COLS] = 0;
+        }
 }
