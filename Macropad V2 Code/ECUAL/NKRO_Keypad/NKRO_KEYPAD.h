@@ -27,11 +27,13 @@
 #define COL_SCAN
 
 /*Keypad Configuration struct*/
-typedef struct NKROKeypadCFGTypeDef {
+typedef struct KeypadCFGTypeDef {
     uint16_t row_pin[KEYPAD_ROWS];
     GPIO_TypeDef * row_GPIO_family[KEYPAD_ROWS];
     uint16_t col_pin[KEYPAD_COLS];
     GPIO_TypeDef * col_GPIO_family[KEYPAD_COLS]
+    uint16_t encoder_pin;
+    GPIO_TypeDef encoder_GPIO_family;
 };
 
 
