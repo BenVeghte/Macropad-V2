@@ -82,7 +82,7 @@ bool NKROKeypadScan() {
     }
 
     //Encoder status
-    if(HAL_GPIO_ReadPin(KeypadCfgParams.encoder_gpio_family, KeypadCfgParams.encoder_pin) == 1) {
+    if(!HAL_GPIO_ReadPin(KeypadCfgParams.encoder_gpio_family, KeypadCfgParams.encoder_pin)) {
            scan_needed = true;
     }
 
@@ -119,7 +119,7 @@ bool NKROKeypadScan() {
         }
         
         //Handling Encoder Presses
-        if (HAL_GPIO_ReadPin(KeypadCfgParams.encoder_gpio_family, KeypadCfgParams.encoder_pin)) { 
+        if (!HAL_GPIO_ReadPin(KeypadCfgParams.encoder_gpio_family, KeypadCfgParams.encoder_pin)) { 
             KeypadInfo.key_history[KEYPAD_ROWS*KEYPAD_COLS]++;
         }
 
