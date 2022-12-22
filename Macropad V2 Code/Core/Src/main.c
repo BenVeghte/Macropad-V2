@@ -50,7 +50,7 @@ UART_HandleTypeDef huart1;
 
 /* USER CODE BEGIN PV */
 //Keypad Variable initialization
-bool main_key_states[(KEYPAD_ROWS*KEYPAD_COLS)+1] = {false};
+uint8_t main_key_states[(KEYPAD_ROWS*KEYPAD_COLS)+1] = {false};
 uint32_t main_key_history[(KEYPAD_ROWS*KEYPAD_COLS)+1] = {0};
 uint8_t main_key_last[(KEYPAD_ROWS*KEYPAD_COLS)+1] = {0};
 
@@ -405,6 +405,7 @@ void SysTick_CallBack(void)
   {
     if(NKROKeypadScan()){
       NKROKeypadPressReleaseCheck();
+      USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS, &main_key_states, sizeof(main_key_states));
     }
     systick_counter=0;
   }

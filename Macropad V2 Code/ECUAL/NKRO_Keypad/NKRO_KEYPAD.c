@@ -16,7 +16,7 @@ static KeypadHistoryTypeDef KeypadInfo;
 /*Function for the initialization of the keypad pins*/
 //This function needs to get called after the rest of the pin initialization is called to prevent
 // the settings being overridden
-void NKROKeypadInit(bool *b_key_states, uint32_t *u32_key_history, uint8_t *u8_keystate) {
+void NKROKeypadInit(uint8_t *u8_key_states, uint32_t *u32_key_history, uint8_t *u8_keystate) {
     uint8_t i = 0;
     GPIO_InitTypeDef GPIO_InitStruct = {0};
     /*Make sure memory addresses to key_states and key_history are properly supplied*/
@@ -135,24 +135,24 @@ void NKROKeypadStateCheck() {
         for(j=0;j<KEYPAD_COLS;j++) {
             //If current state exceeds or is equal to debounce mask and past value is low
             if((KeypadInfo.key_history[(KEYPAD_COLS*(i))+j)]&DEBOUNCE_MASK)>=DEBOUNCE_MASK, KeypadInfo.key_last[(KEYPAD_COLS*(i))+j)] == 0){
-                KeypadInfo.key_states[(KEYPAD_COLS*(i))+j)] = true;
+                KeypadInfo.key_states[(KEYPAD_COLS*(i))+j)] = 1;
                 KeypadInfo.state_history[(KEYPAD_COLS*(i))+j)] = 1;
             }
             //Else if the opposite of the current state passes the debound mask and the previous value was high
             else if(((~KeypadInfo.key_history[(KEYPAD_COLS*(i))+j)])&DEBOUNCE_MASK)>=DEBOUNCE_MASK, KeypadInfo.key_last[(KEYPAD_COLS*(i))+j)] == 1) {
-                KeypadInfo.key_states[(KEYPAD_COLS*(i))+j)] = false;
+                KeypadInfo.key_states[(KEYPAD_COLS*(i))+j)] = 0;
                 KeypadInfo.state_history[(KEYPAD_COLS*(i))+j)] = 0;
             }
         }
     }
     //Handle Encoder
     if((KeypadInfo.key_history[KEYPAD_ROWS*KEYPAD_COLS]&DEBOUNCE_MASK)>=DEBOUNCE_MASK, KeypadInfo.key_last[KEYPAD_ROWS*KEYPAD_COLS] == 0){
-            KeypadInfo.key_states[KEYPAD_ROWS*KEYPAD_COLS] = true;
+            KeypadInfo.key_states[KEYPAD_ROWS*KEYPAD_COLS] = 1;
             KeypadInfo.state_history[KEYPAD_ROWS*KEYPAD_COLS] = 1;
         }
         //Else if the opposite of the current state passes the debound mask and the previous value was high
         else if(((~KeypadInfo.key_history[KEYPAD_ROWS*KEYPAD_COLS])&DEBOUNCE_MASK)>=DEBOUNCE_MASK, KeypadInfo.key_last[KEYPAD_ROWS*KEYPAD_COLS] == 1) {
-            KeypadInfo.key_states[KEYPAD_ROWS*KEYPAD_COLS] = false;
+            KeypadInfo.key_states[KEYPAD_ROWS*KEYPAD_COLS] = 0;
             KeypadInfo.state_history[KEYPAD_ROWS*KEYPAD_COLS] = 0;
         }
 }
