@@ -38,9 +38,9 @@ typedef struct KeypadCFGTypeDef {
 
 
 typedef struct KeypadHistoryTypeDef {
-    bool *key_states[KEYPAD_ROWS*KEYPAD_COLS+1];
-    uint32_t *key_history[KEYPAD_ROWS*KEYPAD_COLS+1];
-    uint8_t *key_last[KEYPAD_ROWS*KEYPAD_COLS+1];
+    bool *key_states[(KEYPAD_ROWS*KEYPAD_COLS)+1];
+    uint32_t *key_history[(KEYPAD_ROWS*KEYPAD_COLS)+1];
+    uint8_t *key_last[(KEYPAD_ROWS*KEYPAD_COLS)+1];
 };
 
 

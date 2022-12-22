@@ -88,7 +88,7 @@ bool NKROKeypadScan() {
 
     /*Check to see if any key has non-zero history*/
     if(scan_needed == false){
-        for(i=0;i<KEYPAD_ROWS*KEYPAD_COLS+1;i++){
+        for(i=0;i<(KEYPAD_ROWS*KEYPAD_COLS)+1;i++){
                 if(KeypadInfo.key_history[i] != 0){
                     scan_needed = true;
                     break;
