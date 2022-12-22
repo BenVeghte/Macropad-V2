@@ -22,7 +22,8 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "../ECUAL/NKRO_Keypad/NKRO_KEYPAD.h"
+#include "../ECUAL/NKRO_Keypad/NKRO_KEYPAD_CFG.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -48,6 +49,11 @@ TIM_HandleTypeDef htim2;
 UART_HandleTypeDef huart1;
 
 /* USER CODE BEGIN PV */
+//Keypad Variable initialization
+bool main_key_states[(KEYPAD_ROWS*KEYPAD_COLS)+1] = {false};
+uint32_t main_key_history[(KEYPAD_ROWS*KEYPAD_COLS)+1] = {0};
+uint8_t main_key_last[(KEYPAD_ROWS*KEYPAD_COLS)+1] = {0};
+
 
 /* USER CODE END PV */
 
@@ -83,7 +89,7 @@ int main(void)
   HAL_Init();
 
   /* USER CODE BEGIN Init */
-
+  NKROKeypadInit(main_key_states, main_key_history, main_key_last);
   /* USER CODE END Init */
 
   /* Configure the system clock */
