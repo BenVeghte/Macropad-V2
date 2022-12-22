@@ -54,6 +54,8 @@ bool main_key_states[(KEYPAD_ROWS*KEYPAD_COLS)+1] = {false};
 uint32_t main_key_history[(KEYPAD_ROWS*KEYPAD_COLS)+1] = {0};
 uint8_t main_key_last[(KEYPAD_ROWS*KEYPAD_COLS)+1] = {0};
 
+//Sys tick counter
+uint8_t systick_counter = 0;
 
 /* USER CODE END PV */
 
@@ -65,7 +67,7 @@ static void MX_SPI2_Init(void);
 static void MX_USART1_UART_Init(void);
 static void MX_TIM2_Init(void);
 /* USER CODE BEGIN PFP */
-
+void SysTick_CallBack(void);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -396,6 +398,17 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+void SysTick_CallBack(void)
+{
+  systick_counter++;
+  if(systick_counter == 5)
+  {
+    if(NKROKeypadScan()){
+      NKROKeypadPressReleaseCheck();
+    }
+    systick_counter=0;
+  }
+}
 
 /* USER CODE END 4 */
 
