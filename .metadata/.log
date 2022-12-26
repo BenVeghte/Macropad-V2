@@ -13,3 +13,21 @@ Command-line arguments:  -os win32 -ws win32 -arch x86_64 -data D:\OneDrive\OneD
 
 !ENTRY com.st.stm32cube.ide.mcu.ide 1 1 2022-12-26 11:32:00.268
 !MESSAGE Started RMI Server, listening on port 41337
+!SESSION 2022-12-26 11:47:25.818 -----------------------------------------------
+eclipse.buildId=Version 1.11.0
+java.version=11.0.16
+java.vendor=Eclipse Adoptium
+BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=en_US
+Command-line arguments:  -os win32 -ws win32 -arch x86_64
+
+!ENTRY org.eclipse.core.resources 2 10035 2022-12-26 11:47:31.062
+!MESSAGE The workspace exited with unsaved changes in the previous session; refreshing workspace to recover changes.
+
+!ENTRY com.st.stm32cube.ide.mcu.informationcenter 4 4 2022-12-26 11:47:33.716
+!MESSAGE CubeMX plugin appears to be active, Log4j initialization might be too late.
+
+!ENTRY com.st.stm32cube.ide.mcu.informationcenter 1 1 2022-12-26 11:47:33.766
+!MESSAGE Log4j initialized with config file D:\OneDrive\OneDrive\Design Projects\Macro Pad\Macropad-V2\.metadata\.log4j.xml
+
+!ENTRY com.st.stm32cube.ide.mcu.ide 1 1 2022-12-26 11:47:35.246
+!MESSAGE Started RMI Server, listening on port 41337
