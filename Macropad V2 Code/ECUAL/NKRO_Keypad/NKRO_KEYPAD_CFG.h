@@ -7,7 +7,7 @@
 #ifndef $NKRO_KEYPAD_CFG_H_
 #define $NKRO_KEYPAD_CFG_H_
 
-#include "NKRO_KEYPAD.h"
+#include "../NKRO_Keypad/NKRO_KEYPAD.h"
 
 extern const KeypadCFGTypeDef KeypadCfgParams;
 

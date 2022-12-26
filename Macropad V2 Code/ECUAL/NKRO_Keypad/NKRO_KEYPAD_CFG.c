@@ -7,7 +7,7 @@
 #include "NKRO_KEYPAD_CFG.h"
 #include "NKRO_KEYPAD.h"
 
-const struct KeypadCFG KeypadCfgParams =
+const KeypadCFG KeypadCfgParams =
     {
         {R1_PIN, R2_PIN, R3_PIN, R4_PIN, R5_PIN, R6_PIN},
         {R1_GPIO_Port, R2_GPIO_Port, R3_GPIO_Port, R4_GPIO_Port, R5_GPIO_Port, R6_GPIO_Port},
