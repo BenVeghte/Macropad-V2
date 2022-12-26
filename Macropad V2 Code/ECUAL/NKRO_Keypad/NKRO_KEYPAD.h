@@ -38,16 +38,16 @@ typedef struct KeypadCFGTypeDef {
 
 
 typedef struct KeypadHistoryTypeDef {
-    bool *key_states[KEYPAD_ROWS*KEYPAD_COLS+1];
-    uint32_t *key_history[KEYPAD_ROWS*KEYPAD_COLS+1];
-    uint8_t *key_last[KEYPAD_ROWS*KEYPAD_COLS+1];
+    uint8_t *key_states[(KEYPAD_ROWS*KEYPAD_COLS)+1];
+    uint32_t *key_history[(KEYPAD_ROWS*KEYPAD_COLS)+1];
+    uint8_t *key_last[(KEYPAD_ROWS*KEYPAD_COLS)+1];
 };
 
 
 
 
 
-void NKROKeypadInit(bool *b_key_states, uint32_t *u32_key_history, uint8_t *u8_keystate);
+void NKROKeypadInit(uint8_t *u8_key_states, uint32_t *u32_key_history, uint8_t *u8_keystate);
 bool NKROKeypadScan();
 void NKROKeypadPressReleaseCheck();
 
