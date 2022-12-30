@@ -52,8 +52,10 @@ Mkfile.old
 dkms.conf
 
 # STM32
-
+.metadata/
 Macropad*V2*Code/.metadata
+.idea/
+.vscode/
 # Altium
 Macropad*V2*PCB/__Previews/**
 Macropad*V2*PCB/History/**

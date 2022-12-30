@@ -1,4 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<session version="1.0">
-<refactoring comment="Move &apos;NKRO_KEYPAD_CFG.c, NKRO_KEYPAD_CFG.h, NKRO_KEYPAD.c, NKRO_KEYPAD.h&apos; to &apos;NKRO_Keypad&apos;" description="Move 4 resources to &apos;NKRO_Keypad&apos;" destination="NKRO_Keypad" element1="ECUAL/NKRO_Keypad/NKRO_KEYPAD_CFG.c" element2="ECUAL/NKRO_Keypad/NKRO_KEYPAD_CFG.h" element3="ECUAL/NKRO_Keypad/NKRO_KEYPAD.c" element4="ECUAL/NKRO_Keypad/NKRO_KEYPAD.h" flags="7" id="org.eclipse.ltk.core.refactoring.move.resources" resources="4" stamp="1672088627140" updateReferences="true"/>
-</session>
