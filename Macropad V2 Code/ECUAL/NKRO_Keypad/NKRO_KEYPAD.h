@@ -27,28 +27,18 @@
 #define COL_SCAN
 
 /*Keypad Configuration struct*/
-typedef struct KeypadCFGTypeDef {
+typedef struct {
     uint16_t row_pin[KEYPAD_ROWS];
     GPIO_TypeDef * row_GPIO_family[KEYPAD_ROWS];
     uint16_t col_pin[KEYPAD_COLS];
-    GPIO_TypeDef * col_GPIO_family[KEYPAD_COLS]
-    uint16_t encoder_pin;
-    GPIO_TypeDef encoder_GPIO_family;
-};
-
-
-typedef struct KeypadHistoryTypeDef {
-    uint8_t *key_states[(KEYPAD_ROWS*KEYPAD_COLS)+1];
-    uint32_t *key_history[(KEYPAD_ROWS*KEYPAD_COLS)+1];
-    uint8_t *key_last[(KEYPAD_ROWS*KEYPAD_COLS)+1];
-};
-
-
-
+    GPIO_TypeDef * col_GPIO_family[KEYPAD_COLS];
+    uint16_t* encoder_pin;
+    GPIO_TypeDef* encoder_GPIO_family;
+}KeypadCFGType;
 
 
 void NKROKeypadInit(uint8_t *u8_key_states, uint32_t *u32_key_history, uint8_t *u8_keystate);
-bool NKROKeypadScan();
+uint8_t NKROKeypadScan();
 void NKROKeypadPressReleaseCheck();
 
 #endif /*NKRO_KEYPAD_H_*/
