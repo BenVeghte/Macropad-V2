@@ -68,8 +68,6 @@ uint8_t main_key_states[(KEYPAD_ROWS*KEYPAD_COLS)+1] = {0};
 uint32_t main_key_history[(KEYPAD_ROWS*KEYPAD_COLS)+1] = {0};
 uint8_t main_key_last[(KEYPAD_ROWS*KEYPAD_COLS)+1] = {0};
 
-//Sys tick counter
-uint8_t systick_counter = 0;
 
 /* USER CODE END PV */
 
@@ -452,18 +450,7 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-void SysTick_CallBack(void)
-{
-  systick_counter++;
-  if(systick_counter == 5)
-  {
-    if(NKROKeypadScan()){
-      NKROKeypadPressReleaseCheck();
-      USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS, &main_key_states, sizeof(main_key_states));
-    }
-    systick_counter=0;
-  }
-}
+
 
 /* USER CODE END 4 */
 
@@ -500,7 +487,10 @@ void StartKeypadCheck(void *argument)
   /* Infinite loop */
   for(;;)
   {
-    osDelay(1);
+	  if(NKROKeypadScan()){
+		NKROKeypadPressReleaseCheck();
+		USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS, &main_key_states, sizeof(main_key_states));
+	  }
   }
   /* USER CODE END StartKeypadCheck */
 }
