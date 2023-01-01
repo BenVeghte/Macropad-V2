@@ -22,8 +22,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "../ECUAL/NKRO_Keypad/NKRO_KEYPAD.h"
-#include "../ECUAL/NKRO_Keypad/NKRO_KEYPAD_CFG.h"
+#include "NKRO_KEYPAD.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -50,7 +49,7 @@ UART_HandleTypeDef huart1;
 
 /* USER CODE BEGIN PV */
 //Keypad Variable initialization
-uint8_t main_key_states[(KEYPAD_ROWS*KEYPAD_COLS)+1] = {false};
+uint8_t main_key_states[(KEYPAD_ROWS*KEYPAD_COLS)+1] = {0};
 uint32_t main_key_history[(KEYPAD_ROWS*KEYPAD_COLS)+1] = {0};
 uint8_t main_key_last[(KEYPAD_ROWS*KEYPAD_COLS)+1] = {0};
 
