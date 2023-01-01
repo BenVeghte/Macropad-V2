@@ -95,6 +95,7 @@ void Error_Handler(void);
 #define R2_GPIO_Port GPIOC
 #define R1_Pin GPIO_PIN_7
 #define R1_GPIO_Port GPIOC
+
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */
