@@ -55,6 +55,13 @@ const osThreadAttr_t defaultTask_attributes = {
   .stack_size = 128 * 4,
   .priority = (osPriority_t) osPriorityNormal,
 };
+/* Definitions for KeypadCheck */
+osThreadId_t KeypadCheckHandle;
+const osThreadAttr_t KeypadCheck_attributes = {
+  .name = "KeypadCheck",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityLow,
+};
 /* USER CODE BEGIN PV */
 //Keypad Variable initialization
 uint8_t main_key_states[(KEYPAD_ROWS*KEYPAD_COLS)+1] = {0};
@@ -74,6 +81,7 @@ static void MX_SPI2_Init(void);
 static void MX_USART1_UART_Init(void);
 static void MX_TIM2_Init(void);
 void StartDefaultTask(void *argument);
+void StartKeypadCheck(void *argument);
 
 /* USER CODE BEGIN PFP */
 void SysTick_CallBack(void);
@@ -142,6 +150,9 @@ int main(void)
   /* Create the thread(s) */
   /* creation of defaultTask */
   defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
+
+  /* creation of KeypadCheck */
+  KeypadCheckHandle = osThreadNew(StartKeypadCheck, NULL, &KeypadCheck_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -474,6 +485,24 @@ void StartDefaultTask(void *argument)
     osDelay(1);
   }
   /* USER CODE END 5 */
+}
+
+/* USER CODE BEGIN Header_StartKeypadCheck */
+/**
+* @brief Function implementing the KeypadCheck thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_StartKeypadCheck */
+void StartKeypadCheck(void *argument)
+{
+  /* USER CODE BEGIN StartKeypadCheck */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END StartKeypadCheck */
 }
 
 /**
