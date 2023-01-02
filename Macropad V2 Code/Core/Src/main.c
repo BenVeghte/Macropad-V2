@@ -485,10 +485,18 @@ void StartKeypadCheck(void *argument)
 {
   /* USER CODE BEGIN StartKeypadCheck */
   /* Infinite loop */
+  uint32_t old_encoder = TIM2->CNT;
+  uint32_t curr_encoder = 0;
+  int8_t encoder_change = 0;
   for(;;)
   {
 	  if(NKROKeypadScan()){
 		NKROKeypadPressReleaseCheck();
+		curr_encoder = TIM2->CNT;
+		encoder_change = curr_encoder-old_encoder;
+		old_encoder = curr_encoder;
+		//need to add functionality for adding the encoder value into the usb hid packet
+		//The hid report descriptor uses relative, so encoder_change is the value needed in the packet
 		USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS, &main_key_states, sizeof(main_key_states));
 	  }
   }
