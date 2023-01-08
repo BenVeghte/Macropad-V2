@@ -56,7 +56,9 @@ dkms.conf
 Macropad*V2*Code/.metadata
 .idea/
 .vscode/
+Macropad V2 Code/.settings/language.settings.xml
 # Altium
 Macropad*V2*PCB/__Previews/**
 Macropad*V2*PCB/History/**
 Macropad*V2*PCB/Project*Logs*for*Macropad*V2/**
+
